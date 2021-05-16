@@ -2,7 +2,7 @@
 import logging
 import time
 from concurrent.futures import Future
-from typing import Final, Dict, Optional
+from typing import Dict, Optional
 
 from avro.schema import SchemaFromJSONData
 from confluent_kafka.admin import AdminClient, NewTopic
@@ -16,8 +16,8 @@ class Producer:
 
     # Tracks existing topics across all Producer instances
     existing_topics = set([])
-    BROKER_URL: Final[str] = 'PLAINTEXT://localhost:9092'
-    SCHEMA_REGISTRY_URL: Final[str] = 'http://localhost:8081'
+    BROKER_URL: str = 'PLAINTEXT://localhost:9092'
+    SCHEMA_REGISTRY_URL: str = 'http://localhost:8081'
 
     def __init__(self,
                  topic_name: str,

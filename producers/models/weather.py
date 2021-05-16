@@ -10,7 +10,6 @@ import requests
 
 from models.producer import Producer
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +36,7 @@ class Weather(Producer):
         #
         #
         super().__init__(
-            "weather", # TODO: Come up with a better topic name
+            "weather",  # TODO: Come up with a better topic name
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
         )
@@ -80,7 +79,7 @@ class Weather(Producer):
         #
         #
         logger.info("weather kafka proxy integration incomplete - skipping")
-        #resp = requests.post(
+        # resp = requests.post(
         #    #
         #    #
         #    # TODO: What URL should be POSTed to?
@@ -102,8 +101,8 @@ class Weather(Producer):
         #            #
         #        }
         #    ),
-        #)
-        #resp.raise_for_status()
+        # )
+        # resp.raise_for_status()
 
         logger.debug(
             "sent weather data to kafka, temp: %s, status: %s",

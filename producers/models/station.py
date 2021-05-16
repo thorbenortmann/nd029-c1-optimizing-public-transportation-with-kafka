@@ -7,8 +7,9 @@ from typing import Optional
 from avro.schema import SchemaFromJSONData
 from confluent_kafka import avro
 
-from models import Turnstile, Train
+from models import Turnstile
 from models.producer import Producer
+from models.train import Train
 
 logger = logging.getLogger(__name__)
 
