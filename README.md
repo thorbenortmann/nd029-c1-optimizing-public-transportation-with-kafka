@@ -69,7 +69,7 @@ Finally, we need to extract station information from our PostgreSQL database int
 
 To accomplish this, you must complete the following tasks:
 
-1. Complete the code and configuration in `producers/connectors.py`
+1. Complete the code and configuration in `producers/connector.py`
 	* Please refer to the [Kafka Connect JDBC Source Connector Configuration Options](https://docs.confluent.io/current/connect/kafka-connect-jdbc/source-connector/source_config_options.html) for documentation on the options you must complete.
 	* You can run this file directly to test your connector, rather than running the entire simulation.
 	* Make sure to use the [Landoop Kafka Connect UI](http://localhost:8084) and [Landoop Kafka Topics UI](http://localhost:8085) to check the status and output of the Connector.
