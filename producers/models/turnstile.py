@@ -25,7 +25,7 @@ class Turnstile(Producer):
             .replace("'", "")
 
         super().__init__(
-            topic_name=f"turnstile",
+            topic_name=f"org.chicago.cta.turnstiles.v1",
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
             num_partitions=1,
@@ -38,7 +38,7 @@ class Turnstile(Producer):
         """Simulates riders entering through the turnstile."""
         num_entries = self.turnstile_hardware.get_entries(timestamp, time_step)
 
-        for _ in num_entries:
+        for _ in range(num_entries):
             self.producer.produce(
                 topic=self.topic_name,
                 key={"timestamp": self.time_millis()},

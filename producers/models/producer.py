@@ -15,7 +15,7 @@ class Producer:
     """Defines and provides common functionality amongst Producers"""
 
     # Tracks existing topics across all Producer instances
-    existing_topics = set([])
+    existing_topics = set()
     BROKER_URL: str = 'PLAINTEXT://localhost:9092'
     SCHEMA_REGISTRY_URL: str = 'http://localhost:8081'
 
@@ -37,7 +37,6 @@ class Producer:
             'bootstrap.servers': self.BROKER_URL
         }
 
-        # If the topic does not already exist, try to create it
         if self.topic_name not in Producer.existing_topics:
             try:
                 self.create_topic()

@@ -13,28 +13,29 @@ logger = logging.getLogger(__name__)
 KSQL_URL = "http://localhost:8088"
 
 KSQL_STATEMENT = """
-CREATE TABLE turnstile (
+CREATE TABLE ORG_CHICAGO_CTA_KSQL_TURNSTILE (
     station_id INT,
     station_name VARCHAR,
     line VARCHAR,
     timestamp BIGINT
 ) WITH (
-    KAFKA_TOPIC='turnstile',
+    KAFKA_TOPIC='org.chicago.cta.turnstiles.v1',
     VALUE_FORMAT='avro',
     KEY='timestamp'
 );
 
-CREATE TABLE turnstile_summary
+CREATE TABLE ORG_CHICAGO_CTA_TURNSTILE_SUMMARY_V1
     WITH (VALUE_FORMAT='JSON') AS
-        SELECT station_id, COUNT(timestamp) AS turnstile_count
-            FROM turnstile
+        SELECT station_id, COUNT(*) AS count
+            FROM ORG_CHICAGO_CTA_KSQL_TURNSTILE
             GROUP BY station_id;
 """
 
 
 def execute_statement():
     """Executes the KSQL statement against the KSQL API"""
-    if topic_check.topic_exists("TURNSTILE_SUMMARY") is True:
+    if topic_check.topic_exists("ORG_CHICAGO_CTA_TURNSTILE_SUMMARY_V1") is True:
+        logging.info('ksql turnstile summary table already exists')
         return
 
     logging.debug("executing ksql statement...")

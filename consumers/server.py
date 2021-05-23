@@ -18,6 +18,7 @@ import topic_check
 
 
 logger = logging.getLogger(__name__)
+WEB_SERVER_PORT = 3000
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -41,12 +42,12 @@ class MainHandler(tornado.web.RequestHandler):
 
 def run_server():
     """Runs the Tornado Server and begins Kafka consumption"""
-    if topic_check.topic_exists("TURNSTILE_SUMMARY") is False:
+    if topic_check.topic_exists("ORG_CHICAGO_CTA_TURNSTILE_SUMMARY_V1") is False:
         logger.fatal(
             "Ensure that the KSQL Command has run successfully before running the web server!"
         )
         exit(1)
-    if topic_check.topic_exists("org.chicago.cta.stations.table.v1") is False:
+    if topic_check.topic_exists("org.chicago.cta.stations") is False:
         logger.fatal(
             "Ensure that Faust Streaming is running successfully before running the web server!"
         )
@@ -58,7 +59,7 @@ def run_server():
     application = tornado.web.Application(
         [(r"/", MainHandler, {"weather": weather_model, "lines": lines})]
     )
-    application.listen(8888)
+    application.listen(WEB_SERVER_PORT)
 
     # Build kafka consumers
     consumers = [
@@ -68,18 +69,18 @@ def run_server():
             offset_earliest=True,
         ),
         KafkaConsumer(
-            "org.chicago.cta.stations.table.v1",
+            "org.chicago.cta.stations",
             lines.process_message,
             offset_earliest=True,
             is_avro=False,
         ),
         KafkaConsumer(
-            "^org.chicago.cta.station.arrivals.",
+            r"^org.chicago.cta.station\.(.*)\.arrivals.v1",
             lines.process_message,
             offset_earliest=True,
         ),
         KafkaConsumer(
-            "TURNSTILE_SUMMARY",
+            "ORG_CHICAGO_CTA_TURNSTILE_SUMMARY_V1",
             lines.process_message,
             offset_earliest=True,
             is_avro=False,
@@ -88,7 +89,7 @@ def run_server():
 
     try:
         logger.info(
-            "Open a web browser to http://localhost:8888 to see the Transit Status Page"
+            f"Open a web browser to {WEB_SERVER_PORT} to see the Transit Status Page"
         )
         for consumer in consumers:
             tornado.ioloop.IOLoop.current().spawn_callback(consumer.consume)

@@ -33,9 +33,10 @@ class Station(Producer):
                 .replace(" ", "_")
                 .replace("-", "_")
                 .replace("'", "")
+                .replace(".", "_")
         )
 
-        topic_name = f"station.{station_name}"
+        topic_name = f"org.chicago.cta.station.{station_name}.arrivals.v1"
         super().__init__(
             topic_name,
             key_schema=Station.key_schema,
@@ -54,7 +55,7 @@ class Station(Producer):
 
     def run(self, train: Train, direction: str, prev_station_id: int, prev_direction: str) -> None:
         """Simulates train arrivals at this station"""
-        logger.info(f'Running station with id: {self.station_id}')
+        logger.debug(f'Running station with id: {self.station_id} and for topic: {self.topic_name}')
         self.producer.produce(
             topic=self.topic_name,
             key={"timestamp": self.time_millis()},

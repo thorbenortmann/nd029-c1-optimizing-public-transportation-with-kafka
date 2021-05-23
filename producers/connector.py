@@ -20,7 +20,6 @@ def configure_connector():
         logging.debug("connector already created skipping recreation")
         return
 
-    logger.info("connector code not completed skipping connector creation")
     resp = requests.post(
        KAFKA_CONNECT_URL,
        headers={"Content-Type": "application/json"},
@@ -39,8 +38,8 @@ def configure_connector():
                "table.whitelist": "stations",
                "mode": "incrementing",
                "incrementing.column.name": "stop_id",
-               "topic.prefix": "db-",
-               "poll.interval.ms": str(int(timedelta(hours=24).total_seconds() * 1000)),
+               "topic.prefix": "org.chicago.cta.psql.",
+               "poll.interval.ms": int(timedelta(hours=24).total_seconds() * 1000),
            }
        }),
     )
