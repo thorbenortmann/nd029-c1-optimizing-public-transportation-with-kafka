@@ -1,6 +1,7 @@
 """Contains functionality related to Weather"""
 import logging
 
+from confluent_kafka import Message
 
 logger = logging.getLogger(__name__)
 
@@ -13,11 +14,8 @@ class Weather:
         self.temperature = 70.0
         self.status = "sunny"
 
-    def process_message(self, message):
+    def process_message(self, message: Message):
         """Handles incoming weather data"""
-        logger.info("weather process_message is incomplete - skipping")
-        #
-        #
-        # TODO: Process incoming weather messages. Set the temperature and status.
-        #
-        #
+        weather_message = message.value()
+        self.temperature = weather_message["temperature"]
+        self.status = weather_message["status"]

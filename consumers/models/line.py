@@ -2,6 +2,8 @@
 import json
 import logging
 
+from confluent_kafka import Message
+
 from models import Station
 
 
@@ -54,25 +56,30 @@ class Line:
             value.get("direction"), value.get("train_id"), value.get("train_status")
         )
 
-    def process_message(self, message):
+    def process_message(self, message: Message):
         """Given a kafka message, extract data"""
-        # TODO: Based on the message topic, call the appropriate handler.
-        if True: # Set the conditional correctly to the stations Faust Table
+        if message.topic() == "org.chicago.cta.stations":  # Set the conditional correctly to the stations Faust Table
             try:
                 value = json.loads(message.value())
                 self._handle_station(value)
             except Exception as e:
                 logger.fatal("bad station? %s, %s", value, e)
-        elif True: # Set the conditional to the arrival topic
+
+        elif message.topic().startswith("org.chicago.cta.station."):   # Set the conditional to the arrival topic
             self._handle_arrival(message)
-        elif True: # Set the conditional to the KSQL Turnstile Summary Topic
+
+        elif message.topic().upper() == "ORG_CHICAGO_CTA_TURNSTILE_SUMMARY_V1":  # Set the conditional to the KSQL Turnstile Summary Topic
             json_data = json.loads(message.value())
+            logger.debug(f"received turnstile event for topic {message.topic()} with json_data:\n{json_data}")
             station_id = json_data.get("STATION_ID")
             station = self.stations.get(station_id)
+
             if station is None:
-                logger.debug("unable to handle message due to missing station")
+                logger.debug(f"unable to handle message due to missing station in data")
                 return
+
             station.process_message(json_data)
+
         else:
             logger.debug(
                 "unable to find handler for message from topic %s", message.topic
